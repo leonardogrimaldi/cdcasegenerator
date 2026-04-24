@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CD Case Generator</title>
+  <style>
+    /* ── Base ────────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #1a1a2e;
+      --surface: #16213e;
+      --card: #0f3460;
+      --accent: #e94560;
+      --accent2: #53d8fb;
+      --text: #eaeaea;
+      --muted: #8892a4;
+      --border: #2a3a5e;
+      --radius: 10px;
+      --track-h: 36px;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    header svg { color: var(--accent); flex-shrink: 0; }
+
+    header h1 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    header span { color: var(--muted); font-size: 0.9rem; margin-left: auto; }
+
+    /* ── Layout ──────────────────────────────────────────────────── */
+    main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 420px 1fr;
+      gap: 2rem;
+      padding: 2rem;
+      max-width: 1300px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    @media (max-width: 900px) {
+      main { grid-template-columns: 1fr; }
+    }
+
+    /* ── Form panel ──────────────────────────────────────────────── */
+    .form-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .panel-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent2);
+      margin-bottom: 0.25rem;
+    }
+
+    .field { display: flex; flex-direction: column; gap: 0.4rem; }
+
+    label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    input[type="text"] {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 6px;
+      padding: 0.55rem 0.75rem;
+      font-size: 0.95rem;
+      transition: border-color 0.2s;
+      width: 100%;
+    }
+
+    input[type="text"]:focus {
+      outline: none;
+      border-color: var(--accent2);
+    }
+
+    /* ── Tracklist ───────────────────────────────────────────────── */
+    .tracklist-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .track-items {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-height: 40px;
+    }
+
+    .track-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0 8px;
+      height: var(--track-h);
+      cursor: grab;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .track-item:active { cursor: grabbing; }
+
+    .track-item.drag-over {
+      border-color: var(--accent2);
+      box-shadow: 0 0 0 2px rgba(83, 216, 251, 0.25);
+    }
+
+    .track-item.dragging { opacity: 0.4; }
+
+    .track-num {
+      font-size: 0.75rem;
+      color: var(--muted);
+      min-width: 22px;
+      text-align: right;
+      user-select: none;
+    }
+
+    .track-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--text);
+      font-size: 0.9rem;
+      outline: none;
+    }
+
+    .track-input::placeholder { color: #4a5568; }
+
+    .icon-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--muted);
+      padding: 4px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.15s, background 0.15s;
+      flex-shrink: 0;
+    }
+
+    .icon-btn:hover { color: var(--text); background: rgba(255,255,255,0.08); }
+    .icon-btn.danger:hover { color: var(--accent); }
+    .icon-btn:disabled { opacity: 0.3; cursor: default; pointer-events: none; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+
+    .btn:active { transform: scale(0.97); }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .btn-secondary {
+      background: var(--card);
+      color: var(--accent2);
+      border: 1px solid var(--border);
+    }
+
+    .btn:hover { opacity: 0.88; }
+
+    .actions { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 0.5rem; }
+
+    /* ── Preview panel ───────────────────────────────────────────── */
+    .preview-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .preview-panel .panel-title { color: var(--accent); }
+
+    .preview-wrap {
+      flex: 1;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 1rem;
+      background: #111;
+      border: 1px dashed var(--border);
+      border-radius: var(--radius);
+      overflow: auto;
+    }
+
+    /* ── CD Case insert (printable) ─────────────────────────────── */
+
+    /*
+     * Standard jewel case insert: front = 120 × 120 mm
+     * Spine: 5.8 mm wide, 120 mm tall
+     * Back: 120 × 120 mm
+     * Total unfolded width: 120 + 5.8 + 120 = ~246 mm
+     * At 96 dpi, 1 mm ≈ 3.78 px → we scale via CSS for screen
+     */
+
+    .cd-insert {
+      display: flex;
+      background: #fff;
+      color: #111;
+      font-family: Arial, Helvetica, sans-serif;
+      width: 930px;   /* 246mm @ 96dpi */
+      height: 453px;  /* 120mm @ 96dpi */
+      flex-shrink: 0;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.6);
+      transform-origin: top center;
+    }
+
+    .cd-back {
+      width: 453px;
+      height: 453px;
+      flex-shrink: 0;
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      background: #f5f5f5;
+      border-right: 1px solid #ccc;
+      overflow: hidden;
+    }
+
+    .cd-spine {
+      width: 22px;
+      height: 453px;
+      flex-shrink: 0;
+      background: #222;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      transform: rotate(180deg);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      padding: 6px 0;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .cd-front {
+      flex: 1;
+      height: 453px;
+      padding: 18px 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      background: linear-gradient(135deg, #1a1a2e 0%, #0f3460 60%, #e94560 100%);
+      color: #fff;
+    }
+
+    /* Back panel content */
+    .back-tracklist {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      overflow: hidden;
+    }
+
+    .back-track-row {
+      display: flex;
+      gap: 8px;
+      font-size: 9.5px;
+      line-height: 1.55;
+      align-items: baseline;
+      border-bottom: 1px solid rgba(0,0,0,0.07);
+      padding-bottom: 1px;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    .back-track-row:last-child { border-bottom: none; }
+
+    .back-num {
+      color: #888;
+      min-width: 18px;
+      text-align: right;
+      flex-shrink: 0;
+      font-size: 8.5px;
+    }
+
+    .back-title {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: #222;
+    }
+
+    .back-meta {
+      margin-bottom: 10px;
+      border-bottom: 2px solid #222;
+      padding-bottom: 8px;
+    }
+
+    .back-artist {
+      font-size: 13px;
+      font-weight: 700;
+      color: #111;
+      line-height: 1.2;
+    }
+
+    .back-album {
+      font-size: 10px;
+      color: #555;
+      margin-top: 2px;
+    }
+
+    /* Front panel content */
+    .front-artist {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      opacity: 0.85;
+      margin-bottom: 6px;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+    }
+
+    .front-title {
+      font-size: 22px;
+      font-weight: 900;
+      line-height: 1.1;
+      text-shadow: 0 2px 6px rgba(0,0,0,0.5);
+      word-break: break-word;
+    }
+
+    /* ── Print styles ────────────────────────────────────────────── */
+    @media print {
+      body { background: #fff; }
+
+      header, .form-panel, .preview-panel > .panel-title,
+      .preview-panel > .actions, .preview-wrap > * { display: none !important; }
+
+      .preview-wrap {
+        border: none;
+        background: #fff;
+        padding: 0;
+        display: block;
+        overflow: visible;
+      }
+
+      .cd-insert {
+        transform: none !important;
+        box-shadow: none;
+        page-break-inside: avoid;
+      }
+
+      main { display: block; padding: 0; }
+      .preview-panel { display: block; }
+      .preview-wrap { display: block; }
+    }
+
+    /* ── Empty state ─────────────────────────────────────────────── */
+    .empty-hint {
+      font-size: 0.8rem;
+      color: #4a5568;
+      font-style: italic;
+      padding: 4px 0;
+    }
+
+    /* ── Scale control ───────────────────────────────────────────── */
+    .scale-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .scale-bar input[type=range] {
+      flex: 1;
+      accent-color: var(--accent2);
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="10"/>
+    <circle cx="12" cy="12" r="3"/>
+    <line x1="12" y1="2" x2="12" y2="5"/>
+    <line x1="12" y1="19" x2="12" y2="22"/>
+  </svg>
+  <h1>CD Case Generator</h1>
+  <span>Printable jewel-case insert</span>
+</header>
+
+<main>
+  <!-- ── Form panel ──────────────────────────────── -->
+  <div class="form-panel">
+    <div>
+      <div class="panel-title">Album info</div>
+    </div>
+
+    <div class="field">
+      <label for="artistInput">Artist / Band</label>
+      <input type="text" id="artistInput" placeholder="e.g. Pink Floyd" autocomplete="off" />
+    </div>
+
+    <div class="field">
+      <label for="titleInput">Album title</label>
+      <input type="text" id="titleInput" placeholder="e.g. The Dark Side of the Moon" autocomplete="off" />
+    </div>
+
+    <div>
+      <div class="tracklist-header">
+        <label>Tracklist</label>
+        <button class="btn btn-secondary btn-sm" id="addTrackBtn" style="padding:0.3rem 0.75rem;font-size:0.8rem;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add track
+        </button>
+      </div>
+      <div style="margin-top:0.6rem;">
+        <div class="track-items" id="trackItems"></div>
+        <p class="empty-hint" id="emptyHint">No tracks yet — click "Add track" to start.</p>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-primary" id="printBtn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        Print / Save PDF
+      </button>
+      <button class="btn btn-secondary" id="clearBtn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+        Clear
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Preview panel ───────────────────────────── -->
+  <div class="preview-panel">
+    <div class="panel-title">Preview</div>
+
+    <div class="scale-bar">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+      <input type="range" id="scaleRange" min="30" max="100" value="65" />
+      <span id="scaleLabel">65%</span>
+    </div>
+
+    <div class="preview-wrap" id="previewWrap">
+      <!-- CD insert rendered here by JS -->
+      <div class="cd-insert" id="cdInsert">
+
+        <!-- Back panel (left side of insert) -->
+        <div class="cd-back">
+          <div class="back-meta">
+            <div class="back-artist" id="prevBackArtist">Artist</div>
+            <div class="back-album" id="prevBackAlbum">Album Title</div>
+          </div>
+          <div class="back-tracklist" id="prevTracklist">
+            <div class="back-track-row">
+              <span class="back-num">1</span>
+              <span class="back-title" style="color:#aaa;font-style:italic;">Your tracks will appear here</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Spine -->
+        <div class="cd-spine" id="prevSpine">Artist · Album</div>
+
+        <!-- Front panel (right side of insert) -->
+        <div class="cd-front">
+          <div class="front-artist" id="prevFrontArtist">Artist</div>
+          <div class="front-title" id="prevFrontTitle">Album Title</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+  /* ── State ───────────────────────────────────────────────────── */
+  let tracks = [];
+  let dragSrc = null;
+
+  const artistInput = document.getElementById('artistInput');
+  const titleInput  = document.getElementById('titleInput');
+  const trackItems  = document.getElementById('trackItems');
+  const emptyHint   = document.getElementById('emptyHint');
+  const addTrackBtn = document.getElementById('addTrackBtn');
+  const printBtn    = document.getElementById('printBtn');
+  const clearBtn    = document.getElementById('clearBtn');
+  const scaleRange  = document.getElementById('scaleRange');
+  const scaleLabel  = document.getElementById('scaleLabel');
+  const cdInsert    = document.getElementById('cdInsert');
+
+  /* Preview elements */
+  const prevBackArtist  = document.getElementById('prevBackArtist');
+  const prevBackAlbum   = document.getElementById('prevBackAlbum');
+  const prevSpine       = document.getElementById('prevSpine');
+  const prevFrontArtist = document.getElementById('prevFrontArtist');
+  const prevFrontTitle  = document.getElementById('prevFrontTitle');
+  const prevTracklist   = document.getElementById('prevTracklist');
+
+  /* ── Helpers ─────────────────────────────────────────────────── */
+  function escHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function getArtist() { return artistInput.value.trim() || 'Artist'; }
+  function getTitle()  { return titleInput.value.trim()  || 'Album Title'; }
+
+  /* ── Render tracklist ────────────────────────────────────────── */
+  function renderTracks() {
+    trackItems.innerHTML = '';
+    tracks.forEach((t, i) => {
+      const item = document.createElement('div');
+      item.className = 'track-item';
+      item.draggable = true;
+      item.dataset.idx = i;
+
+      item.innerHTML = `
+        <span class="track-num">${i + 1}</span>
+        <input class="track-input" type="text" value="${escHtml(t)}" placeholder="Track name…" data-idx="${i}" />
+        <button class="icon-btn" title="Move up" aria-label="Move track up" data-action="up" data-idx="${i}" ${i === 0 ? 'disabled' : ''}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+        </button>
+        <button class="icon-btn" title="Move down" aria-label="Move track down" data-action="down" data-idx="${i}" ${i === tracks.length - 1 ? 'disabled' : ''}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <button class="icon-btn danger" title="Remove track" aria-label="Remove track" data-action="remove" data-idx="${i}">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      `;
+
+      /* Drag events */
+      item.addEventListener('dragstart', onDragStart);
+      item.addEventListener('dragover',  onDragOver);
+      item.addEventListener('dragleave', onDragLeave);
+      item.addEventListener('drop',      onDrop);
+      item.addEventListener('dragend',   onDragEnd);
+
+      /* Input change */
+      item.querySelector('.track-input').addEventListener('input', e => {
+        tracks[Number(e.target.dataset.idx)] = e.target.value;
+        updatePreview();
+      });
+
+      /* Button actions */
+      item.querySelectorAll('[data-action]').forEach(btn => {
+        btn.addEventListener('click', e => {
+          const idx = Number(e.currentTarget.dataset.idx);
+          const action = e.currentTarget.dataset.action;
+          if (action === 'up' && idx > 0) {
+            [tracks[idx - 1], tracks[idx]] = [tracks[idx], tracks[idx - 1]];
+          } else if (action === 'down' && idx < tracks.length - 1) {
+            [tracks[idx], tracks[idx + 1]] = [tracks[idx + 1], tracks[idx]];
+          } else if (action === 'remove') {
+            tracks.splice(idx, 1);
+          }
+          renderTracks();
+          updatePreview();
+        });
+      });
+
+      trackItems.appendChild(item);
+    });
+
+    emptyHint.style.display = tracks.length === 0 ? 'block' : 'none';
+  }
+
+  /* ── Drag & drop ─────────────────────────────────────────────── */
+  function onDragStart(e) {
+    dragSrc = this;
+    this.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', this.dataset.idx);
+  }
+
+  function onDragOver(e) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    if (this !== dragSrc) this.classList.add('drag-over');
+  }
+
+  function onDragLeave() { this.classList.remove('drag-over'); }
+
+  function onDrop(e) {
+    e.preventDefault();
+    this.classList.remove('drag-over');
+    if (this === dragSrc) return;
+    const from = Number(dragSrc.dataset.idx);
+    const to   = Number(this.dataset.idx);
+    const spliced = tracks.splice(from, 1);
+    if (spliced.length === 0) return;
+    tracks.splice(to, 0, spliced[0]);
+    renderTracks();
+    updatePreview();
+  }
+
+  function onDragEnd() {
+    document.querySelectorAll('.track-item').forEach(el => {
+      el.classList.remove('dragging', 'drag-over');
+    });
+    dragSrc = null;
+  }
+
+  /* ── Preview update ──────────────────────────────────────────── */
+  function updatePreview() {
+    const artist = getArtist();
+    const title  = getTitle();
+
+    prevBackArtist.textContent  = artist;
+    prevBackAlbum.textContent   = title;
+    prevFrontArtist.textContent = artist;
+    prevFrontTitle.textContent  = title;
+
+    const spineText = title ? `${artist} · ${title}` : artist;
+    prevSpine.textContent = spineText;
+
+    /* Tracklist in back panel */
+    const filledTracks = tracks.map(t => t.trim()).filter(t => t.length > 0);
+
+    if (filledTracks.length === 0) {
+      prevTracklist.innerHTML = `
+        <div class="back-track-row">
+          <span class="back-title" style="color:#aaa;font-style:italic;">No tracks yet</span>
+        </div>`;
+    } else {
+      prevTracklist.innerHTML = filledTracks.map((t, i) => `
+        <div class="back-track-row">
+          <span class="back-num">${i + 1}</span>
+          <span class="back-title">${escHtml(t)}</span>
+        </div>`).join('');
+    }
+  }
+
+  /* ── Scale preview ───────────────────────────────────────────── */
+  function applyScale(val) {
+    const s = val / 100;
+    cdInsert.style.transform = `scale(${s})`;
+    // Shrink wrapper height so it doesn't leave a gap
+    const naturalH = 453;
+    cdInsert.parentElement.style.minHeight = Math.round(naturalH * s + 32) + 'px';
+    scaleLabel.textContent = val + '%';
+  }
+
+  scaleRange.addEventListener('input', () => applyScale(Number(scaleRange.value)));
+  applyScale(Number(scaleRange.value));
+
+  /* ── Controls ────────────────────────────────────────────────── */
+  artistInput.addEventListener('input', updatePreview);
+  titleInput.addEventListener('input',  updatePreview);
+
+  addTrackBtn.addEventListener('click', () => {
+    tracks.push('');
+    renderTracks();
+    // Focus the new input
+    const inputs = trackItems.querySelectorAll('.track-input');
+    if (inputs.length) inputs[inputs.length - 1].focus();
+    updatePreview();
+  });
+
+  printBtn.addEventListener('click', () => {
+    // Temporarily reset scale for print
+    cdInsert.style.transform = 'none';
+    window.print();
+    // Restore scale after print dialog closes
+    window.addEventListener('afterprint', () => applyScale(Number(scaleRange.value)), { once: true });
+  });
+
+  clearBtn.addEventListener('click', () => {
+    if (!confirm('Clear all fields and tracks?')) return;
+    artistInput.value = '';
+    titleInput.value  = '';
+    tracks = [];
+    renderTracks();
+    updatePreview();
+  });
+
+  /* ── Init ────────────────────────────────────────────────────── */
+  renderTracks();
+  updatePreview();
+</script>
+</body>
+</html>
