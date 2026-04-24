@@ -1,0 +1,438 @@
+/* =============================================================
+   CD Case Generator — Stylesheet
+   ============================================================= */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --primary:       #4f46e5;
+  --primary-hover: #4338ca;
+  --surface:       #ffffff;
+  --surface-alt:   #f8fafc;
+  --border:        #e2e8f0;
+  --text:          #1e293b;
+  --text-muted:    #64748b;
+  --radius:        8px;
+  --shadow-sm:     0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.05);
+  --shadow-md:     0 4px 8px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.05);
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background: var(--surface-alt);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* ── Header ─────────────────────────────────────────────── */
+header {
+  background: var(--primary);
+  color: #fff;
+  padding: 1.5rem 2rem;
+  box-shadow: 0 2px 8px rgba(79,70,229,.35);
+}
+.header-inner { max-width: 1400px; margin: 0 auto; }
+header h1 { font-size: 1.75rem; font-weight: 700; margin-bottom: .3rem; }
+header p  { opacity: .85; font-size: .9rem; }
+
+/* ── Page layout ─────────────────────────────────────────── */
+.layout {
+  display: flex;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  align-items: flex-start;
+}
+
+/* ── Card ────────────────────────────────────────────────── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.5rem;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 1.25rem;
+}
+.card h2 {
+  font-size: .95rem;
+  font-weight: 700;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  margin-bottom: 1rem;
+  padding-bottom: .6rem;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ── Form column ─────────────────────────────────────────── */
+.form-col { flex: 0 0 400px; }
+
+.field { margin-bottom: .875rem; }
+.field:last-child { margin-bottom: 0; }
+
+.field label {
+  display: block;
+  font-size: .75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  margin-bottom: .35rem;
+}
+.optional { font-weight: 400; text-transform: none; letter-spacing: 0; opacity: .75; }
+
+.field input[type="text"],
+.field input[type="number"],
+.field textarea {
+  width: 100%;
+  padding: .5rem .75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: .875rem;
+  color: var(--text);
+  background: var(--surface);
+  transition: border-color .15s, box-shadow .15s;
+}
+.field input:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(79,70,229,.15);
+}
+.field textarea { resize: vertical; }
+
+.field input[type="file"] { font-size: .82rem; color: var(--text-muted); cursor: pointer; }
+.file-hint { font-size: .75rem; color: var(--text-muted); margin-top: .25rem; }
+
+.field-row { display: flex; gap: .75rem; }
+.field-row .field { flex: 1; }
+
+.color-row { display: flex; align-items: center; gap: .5rem; }
+.color-row input[type="color"] {
+  width: 38px; height: 34px;
+  padding: 2px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+.hex-label { font-size: .75rem; color: var(--text-muted); font-family: monospace; }
+
+/* ── Track list ──────────────────────────────────────────── */
+.track-list-header {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  padding: 0 0 .4rem 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: .5rem;
+  font-size: .7rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+.col-num  { min-width: 22px; text-align: right; }
+.col-title { flex: 1; }
+.col-dur  { width: 72px; text-align: center; }
+.col-del  { width: 28px; }
+
+.track-row {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  margin-bottom: .45rem;
+}
+.track-num { min-width: 22px; text-align: right; font-size: .75rem; color: var(--text-muted); }
+
+.track-title-input {
+  flex: 1;
+  padding: .38rem .6rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: .82rem;
+  color: var(--text);
+}
+.track-title-input:focus { outline: none; border-color: var(--primary); }
+
+.track-dur-input {
+  width: 72px;
+  padding: .38rem .5rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: .82rem;
+  text-align: center;
+  color: var(--text);
+}
+.track-dur-input:focus { outline: none; border-color: var(--primary); }
+
+.track-del-btn {
+  width: 28px; height: 28px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: none;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1rem;
+  color: #ef4444;
+  transition: background .15s;
+}
+.track-del-btn:hover { background: #fef2f2; }
+
+/* ── Buttons ─────────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  padding: .55rem 1.2rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: .875rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--surface);
+  color: var(--text);
+  transition: background .15s, border-color .15s;
+}
+.btn:hover { background: var(--surface-alt); }
+
+.btn-sm { padding: .38rem .8rem; font-size: .8rem; margin-top: .4rem; }
+
+.btn-primary {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+  font-size: .95rem;
+  padding: .65rem 1.5rem;
+}
+.btn-primary:hover { background: var(--primary-hover); border-color: var(--primary-hover); }
+
+.form-actions { display: flex; gap: .75rem; }
+
+/* ── Preview column ──────────────────────────────────────── */
+.preview-col { flex: 1; min-width: 0; }
+
+.preview-heading {
+  font-size: .95rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--text);
+  margin-bottom: .15rem;
+}
+.preview-sub { font-size: .8rem; color: var(--text-muted); margin-bottom: 1.25rem; }
+
+.preview-area { display: flex; flex-direction: column; }
+.preview-label {
+  font-size: .65rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  color: var(--text-muted);
+  margin-bottom: .4rem;
+}
+
+/*
+  Preview scale: 1 mm ≈ 2.4 px
+  Front  120 × 120 mm → 288 × 288 px
+  Spine    5.5 × 120 mm →  13 × 288 px
+  Back   120 × 120 mm → 288 × 288 px
+*/
+.prev-front {
+  width: 288px; height: 288px;
+  border: 1px solid #cbd5e1;
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  position: relative;
+}
+
+.prev-back-row { display: flex; }
+
+.prev-spine {
+  width: 13px; height: 288px;
+  border: 1px solid #cbd5e1;
+  border-right: 1px dashed #94a3b8;
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.prev-back {
+  width: 288px; height: 288px;
+  border: 1px solid #cbd5e1;
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  position: relative;
+}
+
+/* ── Cover (front panel) content ─────────────────────────── */
+.case-cover {
+  width: 100%; height: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 14px;
+}
+.case-cover-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,.7) 0%, transparent 60%);
+}
+.case-cover-text { position: relative; z-index: 1; }
+.cover-title {
+  font-weight: 800;
+  font-size: .95rem;
+  line-height: 1.2;
+  word-break: break-word;
+  text-shadow: 0 1px 4px rgba(0,0,0,.5);
+}
+.cover-artist {
+  font-size: .75rem;
+  margin-top: .2rem;
+  opacity: .88;
+  text-shadow: 0 1px 4px rgba(0,0,0,.5);
+}
+
+/* ── Spine content ───────────────────────────────────────── */
+.spine-content {
+  width: 100%; height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 1px;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-size: .42rem;
+}
+.spine-title-text  { font-weight: 700; white-space: nowrap; overflow: hidden; max-height: 55%; }
+.spine-artist-text { white-space: nowrap; overflow: hidden; max-height: 40%; opacity: .8; }
+
+/* ── Back cover content ──────────────────────────────────── */
+.back-inner {
+  width: 100%; height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+  overflow: hidden;
+}
+.back-header-block { margin-bottom: 6px; }
+.back-album-title  { font-weight: 800; font-size: .75rem; line-height: 1.2; word-break: break-word; }
+.back-artist-name  { font-size: .65rem; opacity: .8; }
+.back-track-list   { flex: 1; overflow: hidden; }
+.back-track-item   {
+  display: flex;
+  justify-content: space-between;
+  padding: 1.5px 0;
+  font-size: .6rem;
+}
+.back-track-name {
+  overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+  max-width: 72%;
+}
+.back-track-dur { flex-shrink: 0; opacity: .75; }
+.back-footer {
+  margin-top: 6px;
+  padding-top: 5px;
+  border-top: 1px solid currentColor;
+  opacity: .65;
+  font-size: .55rem;
+}
+.back-footer-notes { margin-bottom: 2px; }
+.back-footer-meta  { display: flex; justify-content: space-between; }
+
+/* ── Footer ──────────────────────────────────────────────── */
+footer {
+  text-align: center;
+  padding: 1rem 2rem 2rem;
+  font-size: .8rem;
+  color: var(--text-muted);
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .layout { flex-direction: column; padding: 1rem; }
+  .form-col { flex: 0 0 auto; width: 100%; }
+}
+
+/* =============================================================
+   PRINT STYLES
+   ============================================================= */
+@media screen {
+  .print-only { display: none; }
+}
+
+@media print {
+  @page { size: landscape; margin: 10mm; }
+
+  body  { background: #fff; }
+  #app  { display: none !important; }
+  .print-only { display: block !important; }
+
+  /* Instructions line above the template */
+  .print-instructions {
+    font-size: 8pt;
+    color: #555;
+    text-align: center;
+    margin-bottom: 6mm;
+    font-family: Arial, sans-serif;
+  }
+
+  /* The flat CD case: back | spine | front */
+  .print-case-wrap {
+    display: flex;
+    width: 245.5mm;
+    height: 120mm;
+    border: .5pt solid #000;
+    margin: 0 auto;
+  }
+
+  .print-back {
+    width: 120mm;
+    height: 120mm;
+    position: relative;
+    overflow: hidden;
+    border-right: .5pt dashed #555;
+  }
+
+  .print-spine {
+    width: 5.5mm;
+    height: 120mm;
+    position: relative;
+    overflow: hidden;
+    border-right: .5pt dashed #555;
+    flex-shrink: 0;
+  }
+
+  .print-front {
+    width: 120mm;
+    height: 120mm;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Spine text */
+  .print-spine-inner {
+    width: 100%; height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 3mm 1mm;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+  }
+  .print-spine-title  { font-size: 5pt; font-weight: bold; white-space: nowrap; overflow: hidden; }
+  .print-spine-artist { font-size: 4.5pt; white-space: nowrap; overflow: hidden; opacity: .8; }
+
+  /* Override preview sizes to fill the print panels */
+  .print-back  .back-inner  { font-size: 8pt; }
+  .print-back  .back-album-title { font-size: 11pt; }
+  .print-back  .back-artist-name { font-size: 8pt; }
+  .print-back  .back-track-item  { font-size: 7.5pt; padding: 1.5pt 0; }
+  .print-back  .back-footer      { font-size: 6pt; }
+
+  .print-front .case-cover .cover-title  { font-size: 16pt; }
+  .print-front .case-cover .cover-artist { font-size: 11pt; }
+}

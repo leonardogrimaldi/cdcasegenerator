@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CD Case Generator</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ====================================================
+     Screen UI (hidden during printing)
+     ==================================================== -->
+<div id="app">
+
+  <header>
+    <div class="header-inner">
+      <h1>📀 CD Case Generator</h1>
+      <p>Fill in your album details, then click <strong>Print</strong> to generate a ready-to-cut CD case insert.</p>
+    </div>
+  </header>
+
+  <div class="layout">
+
+    <!-- ── Left column: form ── -->
+    <div class="form-col">
+
+      <section class="card">
+        <h2>Album Details</h2>
+
+        <div class="field">
+          <label for="albumTitle">Album Title</label>
+          <input type="text" id="albumTitle" placeholder="e.g. Greatest Hits" maxlength="100">
+        </div>
+
+        <div class="field">
+          <label for="artistName">Artist / Band</label>
+          <input type="text" id="artistName" placeholder="e.g. The Awesome Band" maxlength="100">
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="albumYear">Year</label>
+            <input type="number" id="albumYear" placeholder="2024" min="1900" max="2099">
+          </div>
+          <div class="field">
+            <label for="albumGenre">Genre</label>
+            <input type="text" id="albumGenre" placeholder="Rock" maxlength="50">
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="bgColor">Background</label>
+            <div class="color-row">
+              <input type="color" id="bgColor" value="#1a1a2e">
+              <span id="bgColorHex" class="hex-label">#1a1a2e</span>
+            </div>
+          </div>
+          <div class="field">
+            <label for="txtColor">Text Color</label>
+            <div class="color-row">
+              <input type="color" id="txtColor" value="#ffffff">
+              <span id="txtColorHex" class="hex-label">#ffffff</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="coverImage">Cover Image <span class="optional">(optional)</span></label>
+          <input type="file" id="coverImage" accept="image/*">
+          <div id="coverImageName" class="file-hint"></div>
+        </div>
+
+        <div class="field">
+          <label for="backNotes">Back Cover Notes <span class="optional">(optional)</span></label>
+          <textarea id="backNotes" rows="2" placeholder="e.g. © 2024 My Record Label. All rights reserved." maxlength="300"></textarea>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Track List</h2>
+        <div class="track-list-header">
+          <span class="col-num">#</span>
+          <span class="col-title">Title</span>
+          <span class="col-dur">Duration</span>
+          <span class="col-del"></span>
+        </div>
+        <div id="trackListContainer"></div>
+        <button id="addTrackBtn" class="btn btn-sm">+ Add Track</button>
+      </section>
+
+      <div class="form-actions">
+        <button id="printBtn" class="btn btn-primary">🖨️ Print CD Case</button>
+      </div>
+
+    </div><!-- /form-col -->
+
+    <!-- ── Right column: live preview ── -->
+    <div class="preview-col">
+      <h2 class="preview-heading">Live Preview</h2>
+      <p class="preview-sub">Updates as you type.</p>
+
+      <div class="preview-area">
+        <div class="preview-label">FRONT COVER</div>
+        <div id="prevFront" class="prev-front"></div>
+
+        <div class="preview-label" style="margin-top:1.5rem;">SPINE &amp; BACK COVER</div>
+        <div class="prev-back-row">
+          <div id="prevSpine" class="prev-spine"></div>
+          <div id="prevBack" class="prev-back"></div>
+        </div>
+      </div>
+    </div><!-- /preview-col -->
+
+  </div><!-- /layout -->
+
+  <footer>
+    <p>Cut along <strong>solid lines</strong>. Fold along <strong>dashed lines</strong>. Standard jewel-case dimensions (front&nbsp;120&nbsp;×&nbsp;120&nbsp;mm, spine&nbsp;5.5&nbsp;mm, back&nbsp;120&nbsp;×&nbsp;120&nbsp;mm).</p>
+  </footer>
+
+</div><!-- /#app -->
+
+
+<!-- ====================================================
+     Print-only template (shown only when printing)
+     ==================================================== -->
+<div id="printPage" class="print-only">
+  <p class="print-instructions">
+    Cut along <strong>solid lines</strong>. Fold along <strong>dashed lines</strong>.
+    Print on A4 or Letter paper (landscape recommended).
+  </p>
+
+  <div class="print-case-wrap">
+    <!-- back cover | spine | front cover laid flat -->
+    <div id="printBack"  class="print-back"></div>
+    <div id="printSpine" class="print-spine">
+      <div class="print-spine-inner">
+        <span id="printSpineTitle"  class="print-spine-title"></span>
+        <span id="printSpineArtist" class="print-spine-artist"></span>
+      </div>
+    </div>
+    <div id="printFront" class="print-front"></div>
+  </div>
+</div>
+
+
+<script src="js/script.js"></script>
+</body>
+</html>
