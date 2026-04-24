@@ -363,12 +363,39 @@ footer {
   .print-only { display: none; }
 }
 
+/* ── Screen-only disc preview ────────────────────────────── */
+.prev-disc-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: .5rem;
+}
+.prev-disc-svg {
+  width: 192px;
+  height: 192px;
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  box-shadow: var(--shadow-md);
+}
+.prev-disc-note {
+  font-size: .7rem;
+  color: var(--text-muted);
+}
+
 @media print {
-  @page { size: landscape; margin: 10mm; }
+  /* Named page: jewel-case insert (landscape) */
+  @page case-page  { size: A4 landscape; margin: 10mm; }
+
+  /* Named page: disc template (portrait) */
+  @page disc-page  { size: A4 portrait;  margin: 0; }
 
   body  { background: #fff; }
   #app  { display: none !important; }
   .print-only { display: block !important; }
+
+  /* Assign page types */
+  .print-case-section { page: case-page; }
+  .print-disc-section { page: disc-page; break-before: page; }
 
   /* Instructions line above the template */
   .print-instructions {
@@ -435,4 +462,11 @@ footer {
 
   .print-front .case-cover .cover-title  { font-size: 16pt; }
   .print-front .case-cover .cover-artist { font-size: 11pt; }
+
+  /* Disc template page: SVG fills the full page */
+  .print-disc-section svg {
+    display: block;
+    width: 210mm;
+    height: 297mm;
+  }
 }
